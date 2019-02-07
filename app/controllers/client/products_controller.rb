@@ -1,13 +1,32 @@
 class Client::ProductsController < ApplicationController
+  def new
+    render 'new.html.erb'
+  end
+
   def index
     response = HTTP.get("http://localhost:3000/api/products")
     @recipes = response.parse
     render 'index.html.erb'
   end
 
+  def create
+    client_params = {
+                     name: params[:name],
+                     price: params[:price],
+                     description: params[:description],
+                     supplier_id: params[:supplier_id]
+                    }
+    response = HTTP.post(
+                        "http://localhost:3000/api/products", 
+                        form: client_params
+                        )
+    product = response.parse
+    redirect_to "/client/products/#{ product["id"] }"
+  end
+
   def show
     response = HTTP.get("http://localhost:3000/api/products/#{params[:id]}")
-    @recipe = response.parse
+    @product = response.parse
     render 'show.html.erb'
   end
 
